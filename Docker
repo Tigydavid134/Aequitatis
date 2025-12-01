@@ -1,0 +1,21 @@
+# Dockerfile
+FROM nginx:alpine
+
+# Remove default nginx page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy your static site into nginx's web root
+COPY . /usr/share/nginx/html
+
+# Expose port 8080 for Cloud Run
+EXPOSE 8080
+
+# Nginx on Cloud Run: listen on $PORT
+# Create a simple nginx.conf override
+RUN printf 'server { \
+    listen       8080; \
+    server_name  _; \
+    root   /usr/share/nginx/html; \
+    index  index.html; \
+    location / { try_files $uri /index.html; } \
+}\n' > /etc/nginx/conf.d/default.conf
